@@ -1,0 +1,12 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#e9eee5"/><stop offset="1" stop-color="#f7f3eb"/></linearGradient></defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="600" cy="160" r="102" fill="#e6d7b8" opacity=".46"/>
+  <path d="M0 520 Q290 390 570 530 T1200 490 V630 H0Z" fill="#dce2d3"/>
+  <path d="M0 565 Q320 470 640 570 T1200 540 V630 H0Z" fill="#cbd7c6"/>
+  <rect x="216" y="112" width="768" height="395" fill="#f7f3eb" fill-opacity=".5" stroke="#526d58" stroke-opacity=".45"/>
+  <text x="600" y="190" text-anchor="middle" fill="#526d58" font-family="Arial,sans-serif" font-size="20" letter-spacing="7">TOGETHER WITH OUR FAMILIES</text>
+  <text x="600" y="315" text-anchor="middle" fill="#26372e" font-family="Georgia,serif" font-size="86">Olivia <tspan fill="#b49a67" font-size="52">&amp;</tspan> James</text>
+  <text x="600" y="385" text-anchor="middle" fill="#526d58" font-family="Arial,sans-serif" font-size="19" letter-spacing="5">JOYFULLY INVITE YOU TO CELEBRATE</text>
+  <text x="600" y="444" text-anchor="middle" fill="#26372e" font-family="Arial,sans-serif" font-size="19" letter-spacing="5">SUNDAY · JUNE 20 · 2027</text>
+</svg>
