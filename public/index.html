@@ -64,6 +64,22 @@
     .detail-grid { display:grid; grid-template-columns:1fr 1fr; max-width:510px; margin:42px auto 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line) }
     .detail { padding:26px 12px 25px; min-height:126px }.detail:nth-child(odd){border-right:1px solid var(--line)}.detail:nth-child(n+3){border-top:1px solid var(--line)}
     .detail strong { display:block; font:400 22px 'Playfair Display',serif; margin:12px 0 6px }.detail span:last-child { color:var(--muted); font-size:12px }
+    .scratch-intro { max-width:430px; margin:0 auto; color:#677266; font:italic 17px/1.6 'Playfair Display',serif }
+    .scratch-card { position:relative; width:min(100%,480px); min-height:270px; margin:32px auto 0; overflow:hidden; border:1px solid #c8cbbd; border-radius:3px; background:#fbf9f3; box-shadow:0 14px 34px #26372e12 }
+    .scratch-card:before { content:''; position:absolute; inset:10px; border:1px solid #c7b88955; pointer-events:none; z-index:1 }
+    .scratch-content { min-height:270px; padding:38px 22px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px }
+    .scratch-kicker { color:var(--green); font-size:10px; font-weight:600; letter-spacing:.24em; text-transform:uppercase }
+    .scratch-date { color:var(--ink); font:400 clamp(27px,7vw,39px)/1.2 'Playfair Display',serif }
+    .scratch-divider { width:42px; height:1px; margin:4px auto; background:var(--gold) }
+    .scratch-time { color:var(--green); font:italic 18px 'Playfair Display',serif }
+    .scratch-extra { color:var(--muted); font-size:12px; line-height:1.6 }
+    .scratch-cover { position:absolute; z-index:2; inset:0; display:block; width:100%; height:100%; touch-action:none; cursor:crosshair; transition:opacity .65s ease }
+    .scratch-cover-label { position:absolute; z-index:3; inset:0; display:grid; align-content:center; justify-items:center; gap:13px; color:#fffaf0; pointer-events:none; text-shadow:0 1px 4px #4a3d2470; transition:opacity .4s ease }
+    .scratch-cover-label span { font:400 38px 'Playfair Display',serif }
+    .scratch-cover-label strong { font-size:10px; font-weight:500; letter-spacing:.22em; text-transform:uppercase }
+    .scratch-card.is-revealed .scratch-cover,.scratch-card.is-revealed .scratch-cover-label { opacity:0; pointer-events:none }
+    .scratch-button { margin-top:20px; padding:12px 18px; border:1px solid #9daa94; background:transparent; color:var(--green); font:500 10px 'DM Sans',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer }
+    .scratch-button:hover { background:#e3e9df }
     .venue { padding:94px 28px 99px; position:relative }
     .venue-card { max-width:550px; margin:34px auto 0; padding:43px 20px 38px; border:1px solid var(--line); background:#fbf9f3 }
     .venue-name { font:400 31px 'Playfair Display',serif; margin:0 0 10px }.address { font-size:13px; color:var(--muted); line-height:1.7 }
@@ -96,7 +112,7 @@
         <div class="eyebrow">Together with our families</div>
         <h1>Olivia<br><span class="amp">&amp;</span> <em>James</em></h1>
         <div class="eyebrow">joyfully invite you to celebrate</div>
-        <div class="hero-date">Sunday · June 20 · 2027</div>
+        <div class="hero-date">A little surprise waits below</div>
         <p class="hero-note">A day of love, laughter &amp; a little magic</p>
       </div>
       <div class="scroll-cue">Scroll to explore</div>
@@ -106,14 +122,22 @@
       <h2>Two hearts,<br>one beautiful beginning.</h2>
       <p>We found our way to each other, and now we can’t imagine celebrating this next chapter without you.</p>
     </section>
-    <section class="details reveal">
-      <div class="label">Save the date</div><h2>Join us for<br>the celebration</h2>
-      <div class="detail-grid">
-        <div class="detail reveal"><span class="label">The day</span><strong>Sunday, June 20</strong><span>Two thousand twenty-seven</span></div>
-        <div class="detail reveal"><span class="label">The time</span><strong>Four o’clock</strong><span>In the afternoon</span></div>
-        <div class="detail reveal"><span class="label">The ceremony</span><strong>At half past four</strong><span>Garden ceremony</span></div>
-        <div class="detail reveal"><span class="label">The dress</span><strong>Garden formal</strong><span>Come as you feel lovely</span></div>
+    <section class="details reveal" id="save-the-date">
+      <div class="label">A little surprise</div>
+      <h2>Scratch to reveal<br>our wedding day</h2>
+      <p class="scratch-intro">Gently scratch the card with your finger to uncover the date.</p>
+      <div class="scratch-card" id="scratchCard">
+        <div class="scratch-content" aria-live="polite" aria-hidden="true">
+          <span class="scratch-kicker">Save the date</span>
+          <strong class="scratch-date">Sunday, June 20, 2027</strong>
+          <span class="scratch-divider" aria-hidden="true"></span>
+          <span class="scratch-time">Four o’clock in the afternoon</span>
+          <span class="scratch-extra">Garden ceremony at half past four<br>Garden formal</span>
+        </div>
+        <canvas class="scratch-cover" id="scratchCover" role="button" tabindex="0" aria-label="Scratch to reveal the wedding date. You can also use the reveal button below."></canvas>
+        <div class="scratch-cover-label" aria-hidden="true"><span>✳</span><strong>Scratch to reveal</strong></div>
       </div>
+      <button class="scratch-button" type="button" id="revealDateButton">Tap to reveal instead</button>
     </section>
     <section class="venue reveal">
       <div class="label">A place we love</div><h2>Meet us in<br>the Tuscan hills</h2>
@@ -127,6 +151,124 @@
   </main>
   <button class="share" type="button" id="shareButton" aria-label="Share this wedding invitation">↗ &nbsp;Share invitation</button>
   <script>
+    const scratchCard = document.getElementById('scratchCard');
+    const scratchCanvas = document.getElementById('scratchCover');
+    const revealDateButton = document.getElementById('revealDateButton');
+    const scratchContent = document.querySelector('.scratch-content');
+
+    if (scratchCard && scratchCanvas) {
+      const scratchContext = scratchCanvas.getContext('2d', { willReadFrequently: true });
+      let scratching = false;
+      let cardRevealed = false;
+
+      function paintScratchCover() {
+        const bounds = scratchCanvas.getBoundingClientRect();
+        if (!bounds.width || !bounds.height) return;
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        scratchCanvas.width = Math.round(bounds.width * ratio);
+        scratchCanvas.height = Math.round(bounds.height * ratio);
+        scratchContext.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+        const gold = scratchContext.createLinearGradient(0, 0, bounds.width, bounds.height);
+        gold.addColorStop(0, '#b69c69');
+        gold.addColorStop(0.5, '#d2bd8e');
+        gold.addColorStop(1, '#aa915f');
+        scratchContext.globalCompositeOperation = 'source-over';
+        scratchContext.fillStyle = gold;
+        scratchContext.fillRect(0, 0, bounds.width, bounds.height);
+
+        scratchContext.globalAlpha = 0.22;
+        scratchContext.fillStyle = '#fff8e7';
+        for (let x = 14; x < bounds.width; x += 22) {
+          for (let y = 14; y < bounds.height; y += 22) {
+            scratchContext.beginPath();
+            scratchContext.arc(x, y, 1.1, 0, Math.PI * 2);
+            scratchContext.fill();
+          }
+        }
+        scratchContext.globalAlpha = 1;
+        scratchContext.globalCompositeOperation = 'destination-out';
+      }
+
+      function revealDate() {
+        if (cardRevealed) return;
+        cardRevealed = true;
+        scratchCard.classList.add('is-revealed');
+        scratchContent.removeAttribute('aria-hidden');
+        scratchCanvas.setAttribute('aria-hidden', 'true');
+        scratchCanvas.setAttribute('tabindex', '-1');
+        revealDateButton.hidden = true;
+      }
+
+      function scratchAt(event) {
+        const bounds = scratchCanvas.getBoundingClientRect();
+        const x = event.clientX - bounds.left;
+        const y = event.clientY - bounds.top;
+        scratchContext.lineWidth = 44;
+        scratchContext.lineCap = 'round';
+        scratchContext.lineJoin = 'round';
+        scratchContext.beginPath();
+        scratchContext.moveTo(x, y);
+        scratchContext.lineTo(x + 0.1, y + 0.1);
+        scratchContext.stroke();
+      }
+
+      function checkScratchProgress() {
+        if (cardRevealed || !scratchCanvas.width) return;
+        const pixels = scratchContext.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height).data;
+        let transparent = 0;
+        let sampled = 0;
+        const stride = 16;
+        for (let y = 0; y < scratchCanvas.height; y += stride) {
+          for (let x = 0; x < scratchCanvas.width; x += stride) {
+            const alphaIndex = (y * scratchCanvas.width + x) * 4 + 3;
+            if (pixels[alphaIndex] < 30) transparent++;
+            sampled++;
+          }
+        }
+        if (sampled && transparent / sampled > 0.4) revealDate();
+      }
+
+      scratchCanvas.addEventListener('pointerdown', event => {
+        if (cardRevealed) return;
+        event.preventDefault();
+        scratching = true;
+        scratchCanvas.setPointerCapture(event.pointerId);
+        scratchAt(event);
+      });
+      scratchCanvas.addEventListener('pointermove', event => {
+        if (!scratching || cardRevealed) return;
+        event.preventDefault();
+        const bounds = scratchCanvas.getBoundingClientRect();
+        const x = event.clientX - bounds.left;
+        const y = event.clientY - bounds.top;
+        scratchContext.lineWidth = 44;
+        scratchContext.lineCap = 'round';
+        scratchContext.lineJoin = 'round';
+        scratchContext.lineTo(x, y);
+        scratchContext.stroke();
+        scratchContext.beginPath();
+        scratchContext.moveTo(x, y);
+      });
+      scratchCanvas.addEventListener('pointerup', () => {
+        if (!scratching) return;
+        scratching = false;
+        checkScratchProgress();
+      });
+      scratchCanvas.addEventListener('pointercancel', () => { scratching = false; });
+      scratchCanvas.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          revealDate();
+        }
+      });
+      revealDateButton.addEventListener('click', revealDate);
+      paintScratchCover();
+      window.addEventListener('resize', () => {
+        if (!cardRevealed) paintScratchCover();
+      });
+    }
+
     const animatedSections = document.querySelectorAll('.reveal');
     if ('IntersectionObserver' in window) {
       const sectionObserver = new IntersectionObserver((entries, observer) => {
@@ -154,6 +296,3 @@
   </script>
 </body>
 </html>
-
-
-
